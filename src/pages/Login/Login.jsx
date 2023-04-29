@@ -1,12 +1,34 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Providers/authProvider";
 
 const Login = () => {
+	const { login } = useContext(AuthContext);
+	const navigate = useNavigate();
+	const location = useLocation();
+	console.log(location);
+	const from = location?.state?.from?.pathname || "category/0";
+	const handleLogin = (event) => {
+		event.preventDefault();
+		const form = event.target;
+		const email = form.email.value;
+		const password = form.password.value;
+
+		login(email, password)
+			.then((result) => {
+				const loggedUser = result.user;
+				navigate(from, { replace: true });
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
 	return (
 		<Container className="mx-auto w-25">
 			<h3>Please Login</h3>
-			<Form>
+			<Form onSubmit={handleLogin}>
 				<Form.Group className="mb-3" controlId="formBasicEmail">
 					<Form.Label>Email address</Form.Label>
 					<Form.Control
@@ -36,13 +58,8 @@ const Login = () => {
 					Dont't have an Account<Link to="/register">Register</Link>
 				</Form.Text>{" "}
 				<br />
-				<Form.Text className="text-success">
-					We'll never share your email with anyone else.
-				</Form.Text>{" "}
-				<br />
-				<Form.Text className="text-danger">
-					We'll never share your email with anyone else.
-				</Form.Text>
+				<Form.Text className="text-success"></Form.Text> <br />
+				<Form.Text className="text-danger"></Form.Text>
 			</Form>
 		</Container>
 	);
